@@ -13,7 +13,7 @@ $idListPath = ".\Config\ID.tsv"   	#ID List
 $urlListPath = ".\Config\URL.tsv"	#URL List
 
 $iBaseTemplateFile = "Template\Base.php"
-$oBaseWebFile = "root"
+$oBaseWebFile = "index"
 # Could be tested against any other 'Snapped' file
 
 $fileList = @()
@@ -102,15 +102,15 @@ foreach ($component in $idList) {
 	$componentC = $component -replace "/","\"
 	$componentDir = $component -replace "/","\"
 
-	if((Test-Path $iRoot"Component\$component.php") -eq $TRUE ) {
-		$componentFile = "Component\$component.php"
+	if((Test-Path $iRoot"HTML\Component\$component.php") -eq $TRUE ) {
+		$componentFile = "HTML\Component\$component.php"
 		if(checkResourceDir -eq $TRUE ) {
 			$componentC += "\index"
 		}
 	}
 	else {
-		if((Test-Path $iRoot"Component\$component.html") -eq $TRUE ) {
-			$componentFile = "Component\$component.html"
+		if((Test-Path $iRoot"HTML\Component\$component.html") -eq $TRUE ) {
+			$componentFile = "HTML\Component\$component.html"
 			if(checkResourceDir -eq $TRUE ) {
 				$componentC += "\index"
 			}
@@ -124,11 +124,11 @@ foreach ($component in $idList) {
 				New-Item -ItemType directory -Path $oRoot$componentDir
 			}
 
-			if((Test-Path $iRoot"Component\$component\index.php") -eq $TRUE ) {
-				$componentFile = "Component\$component\index.php"
+			if((Test-Path $iRoot"HTML\Component\$component\index.php") -eq $TRUE ) {
+				$componentFile = "HTML\Component\$component\index.php"
 			}
 			else {
-				$componentFile = "Component\$component\index.html"
+				$componentFile = "HTML\Component\$component\index.html"
 			}
 		}
 	}
@@ -144,6 +144,10 @@ foreach ($component in $idList) {
 		$bComponentChanged = $FALSE;
 	}
 
+	if ($componentC -eq "root") {
+		$componentC = $oBaseWebFile;
+	}
+	
 	if (($bTemplateChanged -eq $TRUE) -or ($bComponentChanged -eq $TRUE)) {
 		Write-Host $component
 		Download $eHost $eMode $component $mRoot "$componentC.html"
@@ -169,14 +173,14 @@ foreach ($element in $urlList) {
 		$component = ""
 		$component_full = $oBaseWebFile;
 	}
-    else {
-        if($element[0] -ne "" -and $element[0].EndsWith("/") -and $element[1] -eq "") {
-            $component_full = "$component\$oBaseWebFile";
-        }
-        else {
-            $component_full = $component;
-        }
-    }
+	else {
+		if($element[0] -ne "" -and $element[0].EndsWith("/") -and $element[1] -eq "") {
+			$component_full = "$component\$oBaseWebFile";
+		}
+		else {
+			$component_full = $component;
+		}
+	}
 	if ($element[2] -eq "") {
 		$ext = "html"
 	}
@@ -188,7 +192,7 @@ foreach ($element in $urlList) {
 	$component_full = $component_full.replace("/", "\");
 	$component_full = "$component_full.$ext"
 	
-	if (($bTemplateChanged -eq $TRUE) -or ((Test-Path $oRoot\$component) -ne $TRUE)) {
+	if (($bTemplateChanged -eq $TRUE) -or ((Test-Path $oRoot\$component_full) -ne $TRUE)) {
 	
 		Download $eHost $eMode $component $mRoot $component_full
 		if ($ext -eq "html") {

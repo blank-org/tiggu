@@ -7,5 +7,4 @@ cd %PROJECT_PATH%
 
 powershell -ExecutionPolicy unrestricted -file "%Tiggu%\Script\Publish.ps1"
 
-move public\root.html public\index.html
 copy .htaccess public\.htaccess
