@@ -157,7 +157,6 @@ foreach ($component in $idList) {
 }
 
 foreach ($element in $urlList) {
-	Write-Host $element
 
 	$mDir = $mRoot, $element[0] -join ''
 	if ((Test-Path $mDir) -ne $TRUE) {
@@ -188,12 +187,14 @@ foreach ($element in $urlList) {
 		$ext = $element[2]
 		$component = "$component.$ext"
 	}
-	
+
 	$component_full = $component_full.replace("/", "\");
 	$component_full = "$component_full.$ext"
-	
+
 	if (($bTemplateChanged -eq $TRUE) -or ((Test-Path $oRoot\$component_full) -ne $TRUE)) {
-	
+
+		Write-Host $element
+		
 		Download $eHost $eMode $component $mRoot $component_full
 		if ($ext -eq "html") {
 			CompressHtml $mRoot $component_full $oRoot $component_full
@@ -225,7 +226,7 @@ foreach ($element in $urlList) {
 		else {
 			Copy-Item "$mRoot/$component_full" "$oRoot/$component_full"
 		}
-		
+	
 	}
 	
 }

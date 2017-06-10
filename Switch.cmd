@@ -7,7 +7,7 @@ set target=""
 set HT_FILE=.htaccess
 
 if not defined PROJECT_PATH set PROJECT_PATH=%CD%
-cd /d %ProgramFiles%\Apache\HTTPD
+cd /d %ProgramData%\Apache\HTTPD
 
 dir htdocs? | find /i "%PROJECT_PATH%" > nul
 @rem negative
