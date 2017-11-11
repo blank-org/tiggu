@@ -70,7 +70,6 @@ function XExit() {
 		Exit
 	}
 	else {
-		Remove-Item .\Interim -Force -Recurse
 		Exit
 	}
 }
