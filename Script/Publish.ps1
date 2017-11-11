@@ -168,7 +168,8 @@ foreach ($element in $urlList) {
 	}
 
 	$component = $element[0], $element[1] -join ''
-	if ($component -eq "root") {
+	
+	if ($component -eq "root" -and $element[2] -eq '') {
 		$component = ""
 		$component_full = $oBaseWebFile;
 	}
@@ -180,6 +181,7 @@ foreach ($element in $urlList) {
 			$component_full = $component;
 		}
 	}
+	
 	if ($element[2] -eq "") {
 		$ext = "html"
 	}
