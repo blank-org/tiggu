@@ -1,3 +1,3 @@
 @echo off
 call Publish
-call Switch
+call Change
