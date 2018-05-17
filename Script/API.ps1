@@ -44,6 +44,7 @@ function CompressHtml($iRoot, $i, $oRoot, $o) {
 function CompressJs($iRoot, $i, $oRoot, $o) {
 	java -jar $Env:TIGGU\Tools\Compiler-JavaScript.jar --js $iRoot$i --js_output_file $oRoot$o
 	Status $?
+	[System.IO.File]::ReadAllText("$oRoot$o") -replace '(?ms)/\*.*?\*/' | out-file -encoding UTF8 $oRoot$o
 }
 
 function CompressCss($iRoot, $i, $oRoot, $o) {
