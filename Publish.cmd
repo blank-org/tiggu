@@ -1,5 +1,6 @@
 @echo off
 
+call Check
 call Status
 if %HTDOCS_AT_ROOT% equ 0 (
 	call Switch	)
