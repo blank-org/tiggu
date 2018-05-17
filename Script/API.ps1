@@ -52,7 +52,7 @@ function CompressCss($iRoot, $i, $oRoot, $o) {
 }
 
 function CompressJson($iRoot, $i, $oRoot, $o) {
-	json-minify $iRoot$i | out-file -encoding ASCII $oRoot$o
+	json-minify $iRoot$i | out-file -encoding UTF8 $oRoot$o
 	Status $?
 }
 
