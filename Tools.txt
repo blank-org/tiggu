@@ -22,10 +22,11 @@
 	Used by HTML-Compressor for inline JS
 	Old version - required
 
-5. Compiler-JavaScript
+5. Closure-Compiler
 	Google JavaScript compiler
 	https://developers.google.com/closure/compiler
-	v 201601
+	https://github.com/google/closure-compiler
+	v 2018 10 08
 
 6. JSON minify
 	Used for json data
