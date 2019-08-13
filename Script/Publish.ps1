@@ -1,5 +1,7 @@
 $global:Halt = $FALSE
 
+$nPhpLogLines = (gc "$Env:PHP\logs\errors.log" | measure-object -line).Lines
+
 $iRoot = "Root\"
 $oRoot = "public\"
 $mRoot = "interim\"
@@ -232,5 +234,8 @@ foreach ($element in $urlList) {
 	}
 	
 }
+
+$nPhpLogLines = $nPhpLogLines - (gc "$Env:PHP\logs\errors.log" | measure-object -line).Lines
+gc "$Env:PHP\logs\errors.log" -tail $nPhpLogLines
 
 XExit
