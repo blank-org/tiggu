@@ -8,7 +8,7 @@ $oRoot = "public\"
 $mRoot = "interim\"
 
 $eHost = "http://localhost"
-$eMode = "mode=publish"
+$eMode = "publish"
 
 $fileListPath = ".\Config\File.tsv" 	#File List
 $idListPath = ".\Config\ID.tsv"   	#ID List

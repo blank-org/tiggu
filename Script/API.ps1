@@ -32,7 +32,7 @@ function Replace($iRoot, $iDir, $i, $oRoot, $oDir, $o) {
 }
 
 function Download($eHost, $eMode, $i, $oRoot, $o) {
-	(New-Object System.Net.WebClient).DownloadFile("$eHost/$i`?$eMode", "$oRoot$o")
+	(New-Object System.Net.WebClient).DownloadFile("$eHost/$i`?mode=$eMode", "$oRoot$o")
 	Status $?
 }
 
