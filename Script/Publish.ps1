@@ -1,3 +1,8 @@
+param(
+	[Parameter()]
+	[string]$param_mode
+)
+
 $global:Halt = $FALSE
 
 $nPhpLogLines = (gc "$Env:PHP\logs\errors.log" | measure-object -line).Lines
@@ -8,7 +13,7 @@ $oRoot = "public\"
 $mRoot = "interim\"
 
 $eHost = "http://localhost"
-$eMode = "publish"
+$eMode = $param_mode
 
 $fileListPath = ".\Config\File.tsv" 	#File List
 $idListPath = ".\Config\ID.tsv"   	#ID List

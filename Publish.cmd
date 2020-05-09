@@ -6,7 +6,7 @@ if %HTDOCS_AT_ROOT% equ 0 (
 	call Toggle	)
 cd %PROJECT_PATH%
 
-powershell -ExecutionPolicy unrestricted -file "%Tiggu%\Script\Publish.ps1"
+powershell -ExecutionPolicy unrestricted -file "%Tiggu%\Script\Publish.ps1" %1
 
 copy .htaccess public\.htaccess
 call post-publish
