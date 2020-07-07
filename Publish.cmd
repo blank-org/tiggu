@@ -1,6 +1,7 @@
 @echo off
 
 call Check
+
 call Status
 cd %PROJECT_PATH%
 
