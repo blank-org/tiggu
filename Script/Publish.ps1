@@ -1,8 +1,9 @@
-param(
+param (
 	[Parameter()]
-	[string]$param_mode
+	[string]$param_mode,
+	[string]$eHost
 )
-
+echo $eHost
 $global:Halt = $FALSE
 
 $nPhpLogLines = (gc "$Env:PHP\logs\errors.log" | measure-object -line).Lines
@@ -12,7 +13,6 @@ $iRoot = "Root\"
 $oRoot = "public\"
 $mRoot = "interim\"
 
-$eHost = "http://localhost"
 $eMode = $param_mode
 
 $fileListPath = ".\Config\File.tsv" 	#File List
