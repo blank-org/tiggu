@@ -136,6 +136,7 @@ exit_check() {
     fi
 }
 
+
 updateScriptVersionRef() {
     local scriptName="$1"
     local crc="$2"
@@ -143,17 +144,18 @@ updateScriptVersionRef() {
 
     find "$eRoot/public/" -type f -name $match_files \
     ! -path '*/.git/*' \
-    -exec grep -l "/$scriptName" {} \; | \
+    -exec grep -l "/$scriptName.js" {} \; | \
     while read -r file; do \
-        sed -i "s|/$scriptName|/$scriptName-${crc}.js|g" "$file"; \
+        sed -i "s|/$scriptName.js|/$scriptName-$crc.js|g" "$file"; \
     done
 }
 
-updateScriptVersion() {
-    local scriptName=$1
 
-    local crc=$(cksum "$eRoot/public/$scriptName" | cut -d ' ' -f 1)
-    mv "$eRoot/public/$scriptName" "$eRoot/public/script-$crc.js"
+updateScriptVersion() {
+    local scriptName="$1"
+
+    local crc=$(cksum "$eRoot/public/$scriptName.js" | cut -d ' ' -f 1)
+    mv "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.js"
 
     updateScriptVersionRef "$scriptName" "$crc" "*.html"
     updateScriptVersionRef "$scriptName" "$crc" "sw.js"
