@@ -52,7 +52,7 @@ if [ -f "$urlListPath" ]; then
     done < <(tail -n +2 "$urlListPath")
 fi
 
-if [ -f "$urlListPath" ]; then
+if [ -f "$scriptListPath" ]; then
     while IFS= read -r line; do
         scriptList+="$line ";
     done < $scriptListPath
