@@ -86,7 +86,7 @@ compress_js() {
     local oRoot=$3
     local o=$4
 
-    minify -o "$oRoot$o" "$iRoot$i"
+    java -jar ../../project/gclosure/closure-compiler.jar --js "$iRoot$i" --js_output_file "$oRoot$o" --create_source_map "$oRoot$o.map" --source_map_location_mapping "./interim/|/"
     status=$?
     echo $status
 }
@@ -146,7 +146,7 @@ updateScriptVersionRef() {
     ! -path '*/.git/*' \
     -exec grep -l "/$scriptName.js" {} \; | \
     while read -r file; do \
-        sed -i "s|/$scriptName.js|/$scriptName-$crc.js|g" "$file"; \
+        sed -i "s|/$scriptName.js|/$scriptName-$crc.min.js|g" "$file"; \
     done
 }
 
@@ -155,7 +155,10 @@ updateScriptVersion() {
     local scriptName="$1"
 
     local crc=$(cksum "$eRoot/public/$scriptName.js" | cut -d ' ' -f 1)
-    mv "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.js"
+    mv "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.min.js"
+    mv "$eRoot/public/$scriptName.js.map" "$eRoot/public/$scriptName-$crc.min.js.map"
+    # append map file path to the end of the script file
+    echo "//# sourceMappingURL=/$scriptName-$crc.min.js.map" >> "$eRoot/public/$scriptName-$crc.min.js"
 
     updateScriptVersionRef "$scriptName" "$crc" "*.html"
     updateScriptVersionRef "$scriptName" "$crc" "sw.js"
