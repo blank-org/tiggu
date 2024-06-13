@@ -155,7 +155,7 @@ updateScriptVersion() {
     local scriptName="$1"
 
     local crc=$(cksum "$eRoot/public/$scriptName.js" | cut -d ' ' -f 1)
-    mv "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.min.js"
+    cp "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.min.js"
     mv "$eRoot/public/$scriptName.js.map" "$eRoot/public/$scriptName-$crc.min.js.map"
     # append map file path to the end of the script file
     echo "//# sourceMappingURL=/$scriptName-$crc.min.js.map" >> "$eRoot/public/$scriptName-$crc.min.js"
