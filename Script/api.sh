@@ -86,7 +86,7 @@ compress_js() {
     local oRoot=$3
     local o=$4
 
-    java -jar ../../project/gclosure/closure-compiler.jar --js "$iRoot$i" --js_output_file "$oRoot$o" --create_source_map "$oRoot$o.map" --source_map_location_mapping "./interim/|/"
+    java -jar /usr/local/lib/gclosure/closure-compiler.jar --js "$iRoot$i" --js_output_file "$oRoot$o" --create_source_map "$oRoot$o.map" --source_map_location_mapping "./interim/|/"
     status=$?
     echo $status
 }
