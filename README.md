@@ -5,10 +5,10 @@
 #### Invoke `build.sh` from project specific `render.sh`
 
 e.g.
-> /app/Tiggu/Script/build.sh /app/Site/Project
+> /app/tiggu/build.sh /app/site/project
 
 ### Flow
 `Render` > `Build` > `Publish` > `API`
 
 ### Ouput
-`./interim` > `./public` dirs with built files
+`/app/build/` : `interim` > `public` dirs with built files
