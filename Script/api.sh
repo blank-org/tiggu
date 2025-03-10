@@ -7,7 +7,7 @@ check() {
     if [ ! -f "$iRoot$i" ]; then
         echo "Input file: $iRoot$i not found. Fatal Error!"
         Halt=TRUE
-        xexit
+        exit -1
         return
     fi
 

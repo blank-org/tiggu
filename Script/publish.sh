@@ -37,8 +37,8 @@ if [ -f $fileListPath ]; then
 fi
 
 if [ -f "$idListPath" ]; then
-    while IFS=$'\t' read -r id rest; do
-        if [ "$id" != "#" ]; then
+    while IFS=$'\t' read -r status id rest; do
+        if [ "$status" = "published" ] || [ "$status" = "publish" ]; then
             idList+=("$id")
         fi
     done < <(tail -n +2 "$idListPath")
