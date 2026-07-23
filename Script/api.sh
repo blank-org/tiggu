@@ -154,8 +154,14 @@ updateScriptVersionRef() {
 updateScriptVersion() {
     local scriptName="$1"
 
+    # Incremental builds may not recreate the public intermediate after the
+    # previous build moved it to its cache-busted production name.
+    if [ ! -f "$eRoot/public/$scriptName.js" ]; then
+        compress_js "$mRoot" "$scriptName.js" "$eRoot/public/" "$scriptName.js"
+    fi
+
     local crc=$(cksum "$eRoot/public/$scriptName.js" | cut -d ' ' -f 1)
-    cp "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.min.js"
+    mv "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.min.js"
     mv "$eRoot/public/$scriptName.js.map" "$eRoot/public/$scriptName-$crc.min.js.map"
     # append map file path to the end of the script file
     echo "//# sourceMappingURL=/$scriptName-$crc.min.js.map" >> "$eRoot/public/$scriptName-$crc.min.js"
