@@ -246,20 +246,32 @@ processRecord() {
 }
 
 
-# Read the TSV file line by line
+# Read the TSV file line by line. Split it manually so leading empty
+# fields (for root-level URLs) are preserved.
 urlNo=-1
-urlList=$(tr '\t' ',' < $urlListPath)
-for url in $urlList; do
+while IFS= read -r url || [ -n "$url" ]; do
     ((urlNo++))
     # Skip the first line
     if [ "$urlNo" -eq 0 ]; then
         continue
     fi
+
+    url="${url%$'\r'}"
+    urlFields="${url}"$'\t\t'
+    urlDir="${urlFields%%$'\t'*}"
+    urlFields="${urlFields#*$'\t'}"
+    urlFile="${urlFields%%$'\t'*}"
+    urlFields="${urlFields#*$'\t'}"
+    urlExt="${urlFields%%$'\t'*}"
+
+    urlDir="${urlDir//\\//}"
+    urlFile="${urlFile//\\//}"
+    urlExt="${urlExt//\\//}"
+
     echo "URL: $urlNo"
-    IFS=',' read -r -a col <<< "$url"
-    processRecord "${col[0]}" "${col[1]}" "${col[2]}"
+    processRecord "$urlDir" "$urlFile" "$urlExt"
     ((rowCounter++))
-done
+done < "$urlListPath"
 
 
 exit_check
