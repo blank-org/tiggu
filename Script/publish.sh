@@ -22,6 +22,23 @@ scriptListPath="./Config/Script.lsv"
 iBaseTemplateFile="Template/Base.php"
 oBaseWebFile="index"
 
+jsSourceHashFile="${mRoot}.js-source.sha256"
+currentJsSourceHash=$(
+    find "$iRoot" -type f -name "*.js" -print0 |
+    sort -z |
+    xargs -0 -r sha256sum |
+    sha256sum |
+    cut -d ' ' -f 1
+)
+previousJsSourceHash=""
+[ -f "$jsSourceHashFile" ] && previousJsSourceHash=$(cat "$jsSourceHashFile")
+
+if [ "$currentJsSourceHash" != "$previousJsSourceHash" ]; then
+    bJavaScriptChanged=TRUE
+else
+    bJavaScriptChanged=FALSE
+fi
+
 # Initialize arrays
 fileList=()
 idList=()
@@ -189,7 +206,9 @@ processRecord() {
 
     component_full="${component_full/}.${ext}"
 
-    if [[ "$bTemplateChanged" == "TRUE" || ! -f "${oRoot}/${component_full}" ]]; then
+    if [[ "$bTemplateChanged" == "TRUE" ||
+          ! -f "${oRoot}/${component_full}" ||
+          ( "$ext" == "js" && "$bJavaScriptChanged" == "TRUE" ) ]]; then
         echo "${parts[@]}"
         
         download "$eHost" "$eMode" "$component" "$mRoot" "$component_full"
@@ -244,6 +263,10 @@ done
 
 
 exit_check
+
+if [ "$bJavaScriptChanged" = "TRUE" ]; then
+    printf '%s\n' "$currentJsSourceHash" > "$jsSourceHashFile"
+fi
 
 
 for script in "${scriptList[@]}"; do
