@@ -16,7 +16,7 @@ eMode=$param_mode
 
 fileListPath="./Config/File.tsv"
 idListPath="./Config/ID.tsv"
-urlListPath="./Config/URL.tsv"
+urlListPath="./Config/Url.tsv"
 scriptListPath="./Config/Script.lsv"
 
 iBaseTemplateFile="Template/Base.php"
