@@ -14,9 +14,9 @@ oRoot="$eRoot/public/"
 
 eMode=$param_mode
 
-fileListPath="./Config/File.tsv"
+fileListPath="./Config/Template.tsv"
 idListPath="./Config/ID.tsv"
-urlListPath="./Config/URL.tsv"
+urlListPath="./Config/Url.tsv"
 scriptListPath="./Config/Script.lsv"
 
 iBaseTemplateFile="Template/Base.php"
