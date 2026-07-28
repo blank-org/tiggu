@@ -14,7 +14,7 @@ oRoot="$eRoot/public/"
 
 eMode=$param_mode
 
-fileListPath="./Config/Template.tsv"
+fileListPath="./Config/File.tsv"
 idListPath="./Config/ID.tsv"
 urlListPath="./Config/Url.tsv"
 scriptListPath="./Config/Script.lsv"
