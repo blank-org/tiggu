@@ -16,6 +16,7 @@ eMode=$param_mode
 
 fileListPath="./Config/File.tsv"
 idListPath="./Config/ID.tsv"
+renderListPath="./Config/Render.lsv"
 urlListPath="./Config/Url.tsv"
 scriptListPath="./Config/Script.lsv"
 
@@ -53,7 +54,14 @@ if [ -f $fileListPath ]; then
     done < <(tail -n +2 $fileListPath)
 fi
 
-if [ -f "$idListPath" ]; then
+if [ -f "$renderListPath" ]; then
+    while IFS= read -r id || [ -n "$id" ]; do
+        id="${id%$'\r'}"
+        if [ -n "$id" ] && [[ "$id" != \#* ]]; then
+            idList+=("$id")
+        fi
+    done < "$renderListPath"
+elif [ -f "$idListPath" ]; then
     while IFS=$'\t' read -r status id rest; do
         if [ "$status" = "published" ] || [ "$status" = "publish" ]; then
             idList+=("$id")
