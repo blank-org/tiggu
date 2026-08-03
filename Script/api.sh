@@ -63,8 +63,9 @@ download() {
     local o=$5
 
     wget "$eHost/$i?mode=$eMode" -O "$oRoot$o"
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -75,8 +76,9 @@ compress_html() {
     local o=$4
     minify -o "$oRoot$o" "$iRoot$i"
 
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -87,8 +89,9 @@ compress_js() {
     local o=$4
 
     java -jar /usr/local/lib/gclosure/closure-compiler.jar --js "$iRoot$i" --js_output_file "$oRoot$o" --create_source_map "$oRoot$o.map" --source_map_location_mapping "./interim/|/"
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -99,8 +102,9 @@ compress_css() {
     local o=$4
 
     minify -o "$oRoot$o" "$iRoot$i"
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -111,8 +115,9 @@ compress_json() {
     local o=$4
 
     minify -o "$oRoot$o" "$iRoot$i"
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -128,8 +133,6 @@ status() {
 
 exit_check() {
     if [ "$Halt" = "TRUE" ]; then
-        read -rsp "Press any key to continue..." -n1 key
-        echo
         exit 1
     else
         echo "All files are up to date."
