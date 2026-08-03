@@ -147,9 +147,9 @@ updateScriptVersionRef() {
 
     find "$eRoot/public/" -type f -name $match_files \
     ! -path '*/.git/*' \
-    -exec grep -l "/$scriptName.js" {} \; | \
+    -exec grep -El "/$scriptName(-[0-9]+\.min)?\.js" {} \; | \
     while read -r file; do \
-        sed -i "s|/$scriptName.js|/$scriptName-$crc.min.js|g" "$file"; \
+        sed -E -i "s|/$scriptName(-[0-9]+\.min)?\.js|/$scriptName-$crc.min.js|g" "$file"; \
     done
 }
 
@@ -164,6 +164,9 @@ updateScriptVersion() {
     fi
 
     local crc=$(cksum "$eRoot/public/$scriptName.js" | cut -d ' ' -f 1)
+    find "$eRoot/public/" -maxdepth 1 -type f \
+        \( -name "$scriptName-*.min.js" -o -name "$scriptName-*.min.js.map" \) \
+        -delete
     mv "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.min.js"
     mv "$eRoot/public/$scriptName.js.map" "$eRoot/public/$scriptName-$crc.min.js.map"
     # append map file path to the end of the script file
