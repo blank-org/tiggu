@@ -179,6 +179,66 @@ for component in "${idList[@]}"; do
 
 done
 
+renderTranslatedComponent() {
+    local component=$1
+    local lang=$2
+    local translatedBase="${iRoot}HTML/Component/${lang}/${component}"
+    local componentFile
+    local componentOutput="${lang}/${component}"
+
+    if [ -f "${translatedBase}.php" ]; then
+        componentFile="${translatedBase}.php"
+        if checkResourceDir "$component"; then
+            componentOutput+="/index"
+        fi
+    elif [ -f "${translatedBase}.html" ]; then
+        componentFile="${translatedBase}.html"
+        if checkResourceDir "$component"; then
+            componentOutput+="/index"
+        fi
+    elif [ -f "${translatedBase}/index.php" ]; then
+        componentFile="${translatedBase}/index.php"
+        componentOutput+="/index"
+    elif [ -f "${translatedBase}/index.html" ]; then
+        componentFile="${translatedBase}/index.html"
+        componentOutput+="/index"
+    else
+        echo "Translated component not found: ${lang}/${component}" >&2
+        Halt=TRUE
+        return 1
+    fi
+
+    local jsonOutput="${componentOutput}.json"
+    local htmlOutput="${componentOutput}.html"
+    mkdir -p "$(dirname "${mRoot}${jsonOutput}")" "$(dirname "${oRoot}${jsonOutput}")"
+
+    local componentChanged=FALSE
+    if check "" "$componentFile" "$oRoot" "$jsonOutput"; then
+        download "$eHost" "$eMode" "${lang}/${component}.json" "$mRoot" "$jsonOutput" || return 1
+        compress_html "$mRoot" "$jsonOutput" "$oRoot" "$jsonOutput" || return 1
+        componentChanged=TRUE
+    fi
+
+    if [ "$bTemplateChanged" = "TRUE" ] || [ "$componentChanged" = "TRUE" ]; then
+        download "$eHost" "$eMode" "${lang}/${component}" "$mRoot" "$htmlOutput" || return 1
+        compress_html "$mRoot" "$htmlOutput" "$oRoot" "$htmlOutput" || return 1
+    fi
+}
+
+translationsListPath="./Config/Translations.tsv"
+if [ -f "$translationsListPath" ]; then
+    IFS=$'\t' read -r -a translationLanguages < "$translationsListPath"
+    while IFS=$'\t' read -r -a translationRow; do
+        component="${translationRow[0]%$'\r'}"
+        for ((column=1; column<${#translationLanguages[@]}; column++)); do
+            lang="${translationLanguages[$column]%$'\r'}"
+            translationStatus="${translationRow[$column]%$'\r'}"
+            if [ "$lang" != "en" ] && { [ "$translationStatus" = "published" ] || [ "$translationStatus" = "publish" ]; }; then
+                renderTranslatedComponent "$component" "$lang" || exit 1
+            fi
+        done
+    done < <(tail -n +2 "$translationsListPath")
+fi
 processRecord() {
 
     local _dir_=$1

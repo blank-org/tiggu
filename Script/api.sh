@@ -63,8 +63,9 @@ download() {
     local o=$5
 
     wget "$eHost/$i?mode=$eMode" -O "$oRoot$o"
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -75,8 +76,9 @@ compress_html() {
     local o=$4
     minify -o "$oRoot$o" "$iRoot$i"
 
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -87,8 +89,9 @@ compress_js() {
     local o=$4
 
     java -jar /usr/local/lib/gclosure/closure-compiler.jar --js "$iRoot$i" --js_output_file "$oRoot$o" --create_source_map "$oRoot$o.map" --source_map_location_mapping "./interim/|/"
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -99,8 +102,9 @@ compress_css() {
     local o=$4
 
     minify -o "$oRoot$o" "$iRoot$i"
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -111,8 +115,9 @@ compress_json() {
     local o=$4
 
     minify -o "$oRoot$o" "$iRoot$i"
-    status=$?
-    echo $status
+    local command_status=$?
+    status "$command_status"
+    return "$command_status"
 }
 
 
@@ -128,8 +133,6 @@ status() {
 
 exit_check() {
     if [ "$Halt" = "TRUE" ]; then
-        read -rsp "Press any key to continue..." -n1 key
-        echo
         exit 1
     else
         echo "All files are up to date."
@@ -144,9 +147,9 @@ updateScriptVersionRef() {
 
     find "$eRoot/public/" -type f -name $match_files \
     ! -path '*/.git/*' \
-    -exec grep -l "/$scriptName.js" {} \; | \
+    -exec grep -El "/$scriptName(-[0-9]+\.min)?\.js" {} \; | \
     while read -r file; do \
-        sed -i "s|/$scriptName.js|/$scriptName-$crc.min.js|g" "$file"; \
+        sed -E -i "s|/$scriptName(-[0-9]+\.min)?\.js|/$scriptName-$crc.min.js|g" "$file"; \
     done
 }
 
@@ -161,6 +164,9 @@ updateScriptVersion() {
     fi
 
     local crc=$(cksum "$eRoot/public/$scriptName.js" | cut -d ' ' -f 1)
+    find "$eRoot/public/" -maxdepth 1 -type f \
+        \( -name "$scriptName-*.min.js" -o -name "$scriptName-*.min.js.map" \) \
+        -delete
     mv "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.min.js"
     mv "$eRoot/public/$scriptName.js.map" "$eRoot/public/$scriptName-$crc.min.js.map"
     # append map file path to the end of the script file
