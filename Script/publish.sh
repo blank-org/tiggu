@@ -314,32 +314,43 @@ processRecord() {
 }
 
 
-# Read the TSV file line by line. Split it manually so leading empty
-# fields (for root-level URLs) are preserved.
-urlNo=-1
-while IFS= read -r url || [ -n "$url" ]; do
-    ((urlNo++))
-    # Skip the first line
-    if [ "$urlNo" -eq 0 ]; then
-        continue
-    fi
+# Common assets live in Url.tsv. Language-specific rows live in Url_<lang>.tsv.
+urlManifests=("./Config/Url.tsv")
+shopt -s nullglob
+for extraUrlList in ./Config/Url_*.tsv; do
+    urlManifests+=("$extraUrlList")
+done
 
-    url="${url%$'\r'}"
-    urlFields="${url}"$'\t\t'
-    urlDir="${urlFields%%$'\t'*}"
-    urlFields="${urlFields#*$'\t'}"
-    urlFile="${urlFields%%$'\t'*}"
-    urlFields="${urlFields#*$'\t'}"
-    urlExt="${urlFields%%$'\t'*}"
+urlNo=0
+for urlListPath in "${urlManifests[@]}"; do
+    [ -f "$urlListPath" ] || continue
+    echo "URL list: $urlListPath"
+    header=1
+    while IFS= read -r url || [ -n "$url" ]; do
+        if [ "$header" -eq 1 ]; then
+            header=0
+            continue
+        fi
 
-    urlDir="${urlDir//\\//}"
-    urlFile="${urlFile//\\//}"
-    urlExt="${urlExt//\\//}"
+        url="${url%$'\r'}"
+        [ -z "$url" ] && continue
+        urlFields="${url}"$'\t\t'
+        urlDir="${urlFields%%$'\t'*}"
+        urlFields="${urlFields#*$'\t'}"
+        urlFile="${urlFields%%$'\t'*}"
+        urlFields="${urlFields#*$'\t'}"
+        urlExt="${urlFields%%$'\t'*}"
 
-    echo "URL: $urlNo"
-    processRecord "$urlDir" "$urlFile" "$urlExt"
-    ((rowCounter++))
-done < "$urlListPath"
+        urlDir="${urlDir//\\//}"
+        urlFile="${urlFile//\\//}"
+        urlExt="${urlExt//\\//}"
+
+        ((urlNo++))
+        echo "URL: $urlNo"
+        processRecord "$urlDir" "$urlFile" "$urlExt"
+        ((rowCounter++))
+    done < "$urlListPath"
+done
 
 
 exit_check
