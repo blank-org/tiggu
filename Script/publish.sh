@@ -90,6 +90,11 @@ source $SCRIPT_DIR/api.sh
 [ ! -d $oRoot ] && mkdir -p $oRoot
 [ ! -d $mRoot ] && mkdir -p $mRoot
 
+if [ -f "./Config/Baked.htaccess" ]; then
+    cp "./Config/Baked.htaccess" "${mRoot}.htaccess"
+    cp "./Config/Baked.htaccess" "${oRoot}.htaccess"
+fi
+
 for element in "${fileList[@]}"; do
     # Splitting the element into an array
     IFS=$'\t' read -r -a parts <<< "$element"
