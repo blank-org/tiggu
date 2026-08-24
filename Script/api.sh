@@ -145,7 +145,9 @@ updateScriptVersionRef() {
     local crc="$2"
     local match_files="$3"
 
-    find "$eRoot/public/" -type f -name $match_files \
+    # Quote -name: publish.sh enables nullglob before this runs, so an
+    # unquoted *.html pattern disappears and no HTML refs are rewritten.
+    find "$eRoot/public/" -type f -name "$match_files" \
     ! -path '*/.git/*' \
     -exec grep -El "/$scriptName(-[0-9]+\.min)?\.js" {} \; | \
     while read -r file; do \
@@ -167,8 +169,10 @@ updateScriptVersion() {
     find "$eRoot/public/" -maxdepth 1 -type f \
         \( -name "$scriptName-*.min.js" -o -name "$scriptName-*.min.js.map" \) \
         -delete
-    mv "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.min.js"
-    mv "$eRoot/public/$scriptName.js.map" "$eRoot/public/$scriptName-$crc.min.js.map"
+    # Keep the unhashed name so pages still requesting /script.js do not 404
+    # if HTML rewrite misses them. Cache-busted copies are for rewritten HTML.
+    cp "$eRoot/public/$scriptName.js" "$eRoot/public/$scriptName-$crc.min.js"
+    cp "$eRoot/public/$scriptName.js.map" "$eRoot/public/$scriptName-$crc.min.js.map"
     # append map file path to the end of the script file
     echo "//# sourceMappingURL=/$scriptName-$crc.min.js.map" >> "$eRoot/public/$scriptName-$crc.min.js"
 

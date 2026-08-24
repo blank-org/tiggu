@@ -325,6 +325,7 @@ shopt -s nullglob
 for extraUrlList in ./Config/Url_*.tsv; do
     urlManifests+=("$extraUrlList")
 done
+shopt -u nullglob
 
 urlNo=0
 for urlListPath in "${urlManifests[@]}"; do
