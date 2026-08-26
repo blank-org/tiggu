@@ -72,9 +72,11 @@ download() {
         fi
     else
         if [ -n "$hostHeader" ]; then
-            curl -fsSL -H "Host: $hostHeader" "$requestHost/$i?mode=$eMode" -o "$oRoot$o"
+            curl -fsSL --retry 5 --retry-all-errors --retry-delay 1 \
+                -H "Host: $hostHeader" "$requestHost/$i?mode=$eMode" -o "$oRoot$o"
         else
-            curl -kfsSL "$requestHost/$i?mode=$eMode" -o "$oRoot$o"
+            curl -kfsSL --retry 5 --retry-all-errors --retry-delay 1 \
+                "$requestHost/$i?mode=$eMode" -o "$oRoot$o"
         fi
     fi
     local command_status=$?
