@@ -162,6 +162,12 @@ updateScriptVersionRef() {
     local match_files="$3"
 
     local pattern="/$scriptName(-[0-9]+\.min)?\.js"
+    if [ -n "${TIGGU_NATIVE_PYTHON:-}" ]; then
+        "$TIGGU_NATIVE_PYTHON" "$SCRIPT_DIR/update_script_version.py" \
+            "$eRoot/public/" "$scriptName" "$crc" "$match_files" \
+            "$bJavaScriptChanged" "$buildMarker"
+        return
+    fi
     if [ "$bJavaScriptChanged" = "TRUE" ]; then
         grep -RIlZE \
             --include="$match_files" \
