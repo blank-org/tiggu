@@ -368,6 +368,8 @@ if [ "$bJavaScriptChanged" = "TRUE" ]; then
 fi
 
 
-for script in "${scriptList[@]}"; do
-    updateScriptVersion $script
-done
+if [ "${TIGGU_SKIP_SCRIPT_VERSIONING:-0}" != "1" ]; then
+    for script in "${scriptList[@]}"; do
+        updateScriptVersion $script
+    done
+fi
