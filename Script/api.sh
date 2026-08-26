@@ -61,8 +61,22 @@ download() {
     local i=$3
     local oRoot=$4
     local o=$5
+    local requestHost="${TIGGU_ORIGIN:-$eHost}"
+    local hostHeader="${TIGGU_HOST_HEADER:-}"
 
-    wget "$eHost/$i?mode=$eMode" -O "$oRoot$o"
+    if command -v wget >/dev/null 2>&1; then
+        if [ -n "$hostHeader" ]; then
+            wget --header="Host: $hostHeader" "$requestHost/$i?mode=$eMode" -O "$oRoot$o"
+        else
+            wget "$requestHost/$i?mode=$eMode" -O "$oRoot$o"
+        fi
+    else
+        if [ -n "$hostHeader" ]; then
+            curl -fsSL -H "Host: $hostHeader" "$requestHost/$i?mode=$eMode" -o "$oRoot$o"
+        else
+            curl -kfsSL "$requestHost/$i?mode=$eMode" -o "$oRoot$o"
+        fi
+    fi
     local command_status=$?
     status "$command_status"
     return "$command_status"
@@ -74,7 +88,7 @@ compress_html() {
     local i=$2
     local oRoot=$3
     local o=$4
-    minify -o "$oRoot$o" "$iRoot$i"
+    "${TIGGU_MINIFY:-minify}" -o "$oRoot$o" "$iRoot$i"
 
     local command_status=$?
     status "$command_status"
@@ -88,7 +102,7 @@ compress_js() {
     local oRoot=$3
     local o=$4
 
-    java -jar /usr/local/lib/gclosure/closure-compiler.jar --js "$iRoot$i" --js_output_file "$oRoot$o" --create_source_map "$oRoot$o.map" --source_map_location_mapping "./interim/|/"
+    "${TIGGU_JAVA:-java}" -jar "${TIGGU_CLOSURE_JAR:-/usr/local/lib/gclosure/closure-compiler.jar}" --js "$iRoot$i" --js_output_file "$oRoot$o" --create_source_map "$oRoot$o.map" --source_map_location_mapping "./interim/|/"
     local command_status=$?
     status "$command_status"
     return "$command_status"
@@ -101,7 +115,7 @@ compress_css() {
     local oRoot=$3
     local o=$4
 
-    minify -o "$oRoot$o" "$iRoot$i"
+    "${TIGGU_MINIFY:-minify}" -o "$oRoot$o" "$iRoot$i"
     local command_status=$?
     status "$command_status"
     return "$command_status"
@@ -114,7 +128,7 @@ compress_json() {
     local oRoot=$3
     local o=$4
 
-    minify -o "$oRoot$o" "$iRoot$i"
+    "${TIGGU_MINIFY:-minify}" -o "$oRoot$o" "$iRoot$i"
     local command_status=$?
     status "$command_status"
     return "$command_status"
@@ -145,14 +159,19 @@ updateScriptVersionRef() {
     local crc="$2"
     local match_files="$3"
 
-    # Quote -name: publish.sh enables nullglob before this runs, so an
-    # unquoted *.html pattern disappears and no HTML refs are rewritten.
-    find "$eRoot/public/" -type f -name "$match_files" \
-    ! -path '*/.git/*' \
-    -exec grep -El "/$scriptName(-[0-9]+\.min)?\.js" {} \; | \
-    while read -r file; do \
-        sed -E -i "s|/$scriptName(-[0-9]+\.min)?\.js|/$scriptName-$crc.min.js|g" "$file"; \
-    done
+    local pattern="/$scriptName(-[0-9]+\.min)?\.js"
+    if [ "$bJavaScriptChanged" = "TRUE" ]; then
+        grep -RIlZE \
+            --include="$match_files" \
+            --exclude-dir='.git' \
+            "$pattern" \
+            "$eRoot/public/"
+    else
+        find "$eRoot/public/" -type f -name "$match_files" \
+            -newer "$buildMarker" -print0 | \
+            xargs -0 -r grep -IlZE "$pattern"
+    fi | xargs -0 -r sed -E -i \
+        "s|$pattern|/$scriptName-$crc.min.js|g"
 }
 
 

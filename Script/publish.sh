@@ -7,6 +7,8 @@ echo $param_mode
 echo $eHost
 Halt=FALSE
 export Halt
+buildMarker=$(mktemp)
+trap 'rm -f "$buildMarker"' EXIT
 
 iRoot="$eRoot/Root/"
 mRoot="$eRoot/interim/"
