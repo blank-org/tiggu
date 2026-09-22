@@ -16,7 +16,8 @@ fi
 publishLog=$(mktemp)
 trap 'rm -f "$publishLog"' EXIT
 
-"$SCRIPT_DIR/publish.sh" prod "$(cat ./Config/Project.ini)" "$projectRootPath" \
+bakeMode="${2:-${TIGGU_MODE:-prod}}"
+"$SCRIPT_DIR/publish.sh" "$bakeMode" "$(cat ./Config/Project.ini)" "$projectRootPath" \
     2>&1 | tee "$publishLog"
 publishStatus=${PIPESTATUS[0]}
 

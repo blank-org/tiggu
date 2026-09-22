@@ -42,6 +42,16 @@ else
     bJavaScriptChanged=FALSE
 fi
 
+bakeModeFile="${mRoot}.bake-mode"
+previousBakeMode=""
+[ -f "$bakeModeFile" ] && previousBakeMode=$(cat "$bakeModeFile")
+
+if [ "$eMode" != "$previousBakeMode" ]; then
+    bModeChanged=TRUE
+else
+    bModeChanged=FALSE
+fi
+
 # Initialize arrays
 fileList=()
 idList=()
@@ -123,6 +133,10 @@ if [ -f "$iBaseTemplateFile" ]; then
         bTemplateChanged=FALSE
     fi
 else
+    bTemplateChanged=TRUE
+fi
+
+if [ "$bModeChanged" = "TRUE" ]; then
     bTemplateChanged=TRUE
 fi
 
@@ -366,6 +380,8 @@ exit_check
 if [ "$bJavaScriptChanged" = "TRUE" ]; then
     printf '%s\n' "$currentJsSourceHash" > "$jsSourceHashFile"
 fi
+
+printf '%s\n' "$eMode" > "$bakeModeFile"
 
 
 if [ "${TIGGU_SKIP_SCRIPT_VERSIONING:-0}" != "1" ]; then
