@@ -26,7 +26,8 @@ if [ "$publishStatus" -ne 0 ]; then
     exit "$publishStatus"
 fi
 
-if grep -Eiq '(^|[^[:alpha:]])(warning|error)([^[:alpha:]]|$)' "$publishLog"; then
+# Match diagnostic severity, not words inside article URLs or file paths.
+if grep -Eiq '(^|[[:space:]>])(warning|error)([[:space:]]*[:!]|[[:space:]]+-|</b>[[:space:]]*:)' "$publishLog"; then
     echo "Publishing failed because warning or error output was detected." >&2
     exit 1
 fi
